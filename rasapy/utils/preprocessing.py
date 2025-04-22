@@ -2,7 +2,7 @@ import numpy as np
 
 def train_test_split(X, y, test_size=None, random_state=None, shuffle=True):
     """
-    Splits feature and target data into train and test sets for model training and evaluation
+    Splits feature and target data into train and test sets for model training and evaluation.
     """
     m = X.shape[0]
     # Shuffle input arrays

@@ -10,6 +10,8 @@ class GradientDescentRegression(BaseRegressor):
     def fit(self, X_train, y_train):
         """
         Fit weight and bias parameters using gradient descent.
+        Loss (Mean Squared Error):
+            J(θ) = (1 / m) * Σ (ŷᵢ - yᵢ)²
         """
         # Input is of shape m training examples, n features
         m, n = X_train.shape
