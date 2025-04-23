@@ -10,7 +10,7 @@ class OLSRegression(BaseRegressor):
     def fit(self, X_train, y_train):
         """
         Fit weight and bias parameters using the normal equation for Ordinary Least Squares.
-        β = (XᵀX)⁻¹Xᵀy
+            β = (XᵀX)⁻¹Xᵀy
         """
         # Input is of shape m training examples, n features
         m, n = X_train.shape
