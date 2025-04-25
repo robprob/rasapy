@@ -1,4 +1,5 @@
 import numpy as np
+from rasapy.metrics.regression import r_squared
 
 class TreeRegression:
     def __init__(self, max_depth=None, max_features=None, random_state=None):
@@ -28,11 +29,21 @@ class TreeRegression:
             y_pred[i] = self.root.traverse(X[i])
             
         return y_pred
+    
+    def score(self, X, y_true):
+        """
+        Make predictions on feature data and calculate coefficient of determination (R^2).
+        """
+        y_pred = self.predict(X)
+        r2 = r_squared(y_true, y_pred)
+        
+        return r2
+    
 
 
 class TreeNode:
     def __init__(self, indices=None):
-        self.indices = indices # List of training indices at node
+        self.indices = np.array(indices) # List of training indices at node
         self.feature = None # Feature index used to split node
         self.split_value = None # Value used to split node
         self.left_node = None # Left branch TreeNode
