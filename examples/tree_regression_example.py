@@ -9,8 +9,8 @@ X, y = data[0], data[1]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=115)
 
 models = {
-    "Decision Tree Regression": TreeRegression(),
-    "Sklearn": DecisionTreeRegressor()
+    "Decision Tree Regression": TreeRegression(random_state=115),
+    "Sklearn": DecisionTreeRegressor(random_state=115)
 }
 
 for name, model in models.items():

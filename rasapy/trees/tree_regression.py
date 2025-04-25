@@ -42,8 +42,9 @@ class TreeRegression:
 
 
 class TreeNode:
-    def __init__(self, indices=None):
+    def __init__(self, indices=None, depth=0):
         self.indices = np.array(indices) # List of training indices at node
+        self.depth = depth # Current depth of node (root = 0)
         self.feature = None # Feature index used to split node
         self.split_value = None # Value used to split node
         self.left_node = None # Left branch TreeNode
