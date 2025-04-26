@@ -15,8 +15,7 @@ class TreeClassification:
         elif criterion == "gini":
             criterion = gini
         else:
-            print(f"Invalid criterion: {criterion}")
-            exit()
+            raise ValueError("fInvalid criterion: {criterion}")
         
         self.params = {
             "criterion": criterion, # criterion for evaluating quality of a split
@@ -98,8 +97,7 @@ class TreeNode:
         elif max_features == "log2":
             max_features = max(1, int(np.log2(n)))
         else:
-            print("Invalid parameter input for max_features: {max_features}")
-            exit()
+            raise ValueError(f"Invalid parameter input for max_features: {max_features}")
         
         # Create a random permutation of feature indices
         # Even if max_features = None, random feature permutation improves randomness/generalizability
@@ -164,6 +162,10 @@ class TreeNode:
             return
         # Check for maximum allowed depth
         if self.depth == self.params["max_depth"]:
+            self.set_prediction(y_train[self.indices])
+            return
+        # Check for empty split indices
+        if len(left_indices) == 0 or len(right_indices) == 0:
             self.set_prediction(y_train[self.indices])
             return
 
