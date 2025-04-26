@@ -15,7 +15,7 @@ class TreeClassification:
         elif criterion == "gini":
             criterion = gini
         else:
-            raise ValueError("fInvalid criterion: {criterion}")
+            raise ValueError(f"Invalid criterion: {criterion}")
         
         self.params = {
             "criterion": criterion, # criterion for evaluating quality of a split
@@ -47,8 +47,9 @@ class TreeClassification:
         for i in range(m):
             # Recursively traverse down decision nodes, returning a prediction at leaf node
             y_pred[i] = self.root.traverse(X[i])
-        
-        y_pred = (y_pred >= 0.5).astype(int)
+            
+        # Ensure int cast
+        y_pred = y_pred.astype(int)
             
         return y_pred
     
