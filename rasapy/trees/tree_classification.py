@@ -1,13 +1,25 @@
 import numpy as np
-from rasapy.metrics.regression import r_squared
+from scipy import stats
+from rasapy.metrics.classification import entropy, gini, accuracy
 
-class TreeRegression:
+class TreeClassification:
     """
-    Implementation of a decision tree for regression of a single output variable.
+    Implementation of a decision tree for classification of a single binary output variable.
     """
-    def __init__(self, max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None, random_state=None):
+    def __init__(self, criterion="gini", max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None, random_state=None):
         self.root = None
+        
+        # Parse criterion to assign the correct cost function
+        if criterion == "entropy":
+            criterion = entropy
+        elif criterion == "gini":
+            criterion = gini
+        else:
+            print(f"Invalid criterion: {criterion}")
+            exit()
+        
         self.params = {
+            "criterion": criterion, # criterion for evaluating quality of a split
             "max_depth": max_depth,
             "min_samples_split": min_samples_split,
             "min_samples_leaf": min_samples_leaf,
@@ -29,24 +41,26 @@ class TreeRegression:
     
     def predict(self, X):
         """
-        Make a regression prediction based on which leaf node is reached.
+        Make a classification prediction based on the majority of values in node reached.
         """
         m, n = X.shape
         y_pred = np.empty(m)
         for i in range(m):
             # Recursively traverse down decision nodes, returning a prediction at leaf node
             y_pred[i] = self.root.traverse(X[i])
+        
+        y_pred = (y_pred >= 0.5).astype(int)
             
         return y_pred
     
     def score(self, X, y_true):
         """
-        Make predictions on feature data and calculate coefficient of determination (R^2).
+        Make predictions on feature data and calculate accuracy.
         """
         y_pred = self.predict(X)
-        r2 = r_squared(y_true, y_pred)
+        acc = accuracy(y_true, y_pred)
         
-        return r2
+        return acc
 
 
 class TreeNode:
@@ -112,16 +126,18 @@ class TreeNode:
                 left_indices = self.indices[left_indices]
                 right_indices = self.indices[right_indices]
                 
-                # Calculate weighted variance of resulting split
+                # Parse chosen cost function
+                cost_function = self.params["criterion"]
+                # Calculate weighted cost of resulting split
                 left_w, right_w = len(left_indices) / len(sorted_indices), len(right_indices) / len(sorted_indices)
-                weighted_var = (np.var(y_train[left_indices]) * left_w) + (np.var(y_train[right_indices]) * right_w)
+                weighted_entropy = (cost_function(y_train[left_indices]) * left_w) + (cost_function(y_train[right_indices]) * right_w)
         
                 # If lower than current lowest cost, update best feature/value split
-                if weighted_var < lowest_cost:
+                if weighted_entropy < lowest_cost:
                     best_feature = col
                     # Split on average value between ordered feature values
                     best_value = (feat_col[sorted_indices[i - 1]] + feat_col[i]) / 2
-                    lowest_cost = weighted_var
+                    lowest_cost = weighted_entropy
         
         return best_feature, best_value
         
@@ -159,6 +175,11 @@ class TreeNode:
         """
         Continually recursively split node until a leaf is reached.
         """
+        # Check for completely pure node
+        if np.all(y_train[self.indices] == y_train[self.indices][0]): # All values == first index
+            self.set_prediction(y_train[self.indices])
+            return
+        
         # Check minimum necessary samples to split
         if len(self.indices) < self.params["min_samples_split"]:
             self.set_prediction(y_train[self.indices])
@@ -174,9 +195,9 @@ class TreeNode:
     
     def set_prediction(self, values):
         """
-        Calculate and set regression prediction as average of values at this leaf node.
+        Calculate and set classification prediction as most common output (mode) of this node.
         """
-        self.prediction = np.mean(values)
+        self.prediction = stats.mode(values, keepdims=False).mode
 
     def traverse(self, x_i):
         """

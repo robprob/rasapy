@@ -23,4 +23,4 @@ for name, model in models.items():
     else:
         weights = model.weights
         bias = model.bias
-    print(f"Weights: {weights}\nBias: {bias}\n")
+    print(f"  Weights: {weights}\nBias: {bias}\n")

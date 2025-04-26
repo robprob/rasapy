@@ -14,7 +14,7 @@ def r_squared(y_true, y_pred):
 
 def mean_squared_error(y_true, y_pred):
     """
-    MSE Formula
+    (1/m) * Σ(ŷᵢ - yᵢ)²
     """
     mse = ((y_pred - y_true)**2).mean()
     return mse
