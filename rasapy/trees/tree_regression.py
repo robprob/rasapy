@@ -2,18 +2,24 @@ import numpy as np
 from rasapy.metrics.regression import r_squared
 
 class TreeRegression:
-    def __init__(self, max_depth=None, max_features=None, random_state=None):
-        self.root = None # Root node of tree
-        self.max_depth = max_depth
-        self.max_features = max_features
-        self.random_state = random_state
+    def __init__(self, max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None, random_state=None):
+        self.root = None
+        self.params = {
+            "max_depth": max_depth,
+            "min_samples_split": min_samples_split,
+            "min_samples_leaf": min_samples_leaf,
+            "max_features": max_features, # int, float or {“sqrt”, “log2”}, default=None, 
+            "random_state": random_state
+        }
+        # Seed RNG
+        np.random.seed(random_state)
     
     def fit(self, X_train, y_train):
         """
         Fit decision tree nodes and parameters using training data.
         """
         # Instantiate root node
-        self.root = TreeNode(indices=range(X_train.shape[0]))
+        self.root = TreeNode(indices=range(X_train.shape[0]), depth=0, params=self.params)
 
         # Recursively instantiate tree on training data
         self.root.recursive_split(X_train, y_train)
@@ -38,18 +44,19 @@ class TreeRegression:
         r2 = r_squared(y_true, y_pred)
         
         return r2
-    
 
 
 class TreeNode:
-    def __init__(self, indices=None, depth=0):
-        self.indices = np.array(indices) # List of training indices at node
-        self.depth = depth # Current depth of node (root = 0)
-        self.feature = None # Feature index used to split node
-        self.split_value = None # Value used to split node
-        self.left_node = None # Left branch TreeNode
-        self.right_node = None # Right branch TreeNode
-        self.prediction = None # Prediction output at leaf node
+    def __init__(self, indices, depth, params):
+        self.indices = np.array(indices)   # List of training indices at node
+        self.params = params               # Parameter dictionary passed down from TreeRegression
+        
+        self.depth = depth                 # Current depth of node (root = 0)
+        self.feature = None                # Feature index used to split node
+        self.split_value = None            # Value used to split node
+        self.left_node = None              # Left branch TreeNode
+        self.right_node = None             # Right branch TreeNode
+        self.prediction = None             # Prediction output at leaf node
 
     def best_split(self, X_train, y_train):
         """
@@ -61,12 +68,34 @@ class TreeNode:
         best_value = None
         lowest_cost = np.inf
         
+        # Parse max_features parameter
+        max_features = self.params["max_features"]
+        if max_features is None:
+            max_features = n
+        elif isinstance(max_features, int):
+            pass
+        elif isinstance(max_features, float):
+            max_features = max(1, int(max_features * n))
+        elif max_features == "sqrt":
+            max_features = max(1, int(np.sqrt(n)))
+        elif max_features == "log2":
+            max_features = max(1, int(np.log2(n)))
+        else:
+            print("Invalid parameter input for max_features: {max_features}")
+            exit()
+        
+        # Create a random permutation of feature indices
+        # Even if max_features = None, random feature permutation improves randomness/generalizability
+        feature_indices = np.random.permutation(np.arange(n))
+        # Parse max number
+        feature_indices = feature_indices[:max_features]
+        
         # Iterate features
-        for col in range(n):
+        for col in feature_indices:
             # Parse current feature column
             feat_col = X_train[self.indices, col]
             
-            # Obtain indices that would sort feature values
+            # Obtain sample indices that would sort feature values
             sorted_indices = np.argsort(feat_col)
             
             # Iterate sorted data, locating the best split
@@ -90,7 +119,7 @@ class TreeNode:
                     # Split on average value between ordered feature values
                     best_value = (feat_col[sorted_indices[i - 1]] + feat_col[i]) / 2
                     lowest_cost = weighted_var
-            
+        
         return best_feature, best_value
         
     def split_node(self, X_train, y_train):
@@ -109,19 +138,32 @@ class TreeNode:
         # Determine indices for left/right splits, then narrow to indices at current node (intersect)
         left_indices = np.intersect1d(np.where(feat_col < best_value)[0], self.indices)
         right_indices = np.intersect1d(np.where(feat_col >= best_value)[0], self.indices)
+        
+        # Check for minimum allowed samples per leaf
+        if (len(left_indices) < self.params["min_samples_leaf"]) or (len(right_indices) < self.params["min_samples_leaf"]):
+            self.set_prediction(y_train[self.indices])
+            return
+        # Check for maximum allowed depth
+        if self.depth == self.params["max_depth"]:
+            self.set_prediction(y_train[self.indices])
+            return
+        # Check for empty split indices
+        if len(left_indices) == 0 or len(right_indices) == 0:
+            self.set_prediction(y_train[self.indices])
+            return
 
         # Instantiate new branch nodes
-        self.left_node = TreeNode(left_indices)
-        self.right_node = TreeNode(right_indices)
+        self.left_node = TreeNode(left_indices, self.depth + 1, self.params)
+        self.right_node = TreeNode(right_indices, self.depth + 1, self.params)
 
     def recursive_split(self, X_train, y_train):
         """
         Continually recursively split node until a leaf is reached.
         """
-        # Check for leaf node (only 1 index)
-        if len(self.indices) == 1:
-            # Calculate and set regression prediction as average of values at this node
-            self.prediction = np.mean(y_train[self.indices])
+        # Check minimum necessary samples to split
+        if len(self.indices) < self.params["min_samples_split"]:
+            # Calculate and set regression prediction as average of values at this leaf node
+            self.set_prediction(y_train[self.indices])
             return
         
         # Split this node
@@ -131,13 +173,19 @@ class TreeNode:
         if self.left_node and self.right_node:
             self.left_node.recursive_split(X_train, y_train)
             self.right_node.recursive_split(X_train, y_train)
+    
+    def set_prediction(self, values):
+        """
+        Calculate and set regression prediction as average of values at this leaf node.
+        """
+        self.prediction = np.mean(values)
 
     def traverse(self, x_i):
         """
         Given a sample, recursively traverse down decision nodes, returning a prediction at leaf node.
         """
         # Check for leaf node with a valid prediction
-        if self.prediction != None:
+        if self.prediction is not None:
             return self.prediction
 
         # Parse relevant feature value for split
@@ -148,4 +196,3 @@ class TreeNode:
             return self.left_node.traverse(x_i)
         else:
             return self.right_node.traverse(x_i)
-        
