@@ -4,7 +4,7 @@ from rasapy.metrics.classification import entropy, gini, accuracy
 
 class TreeClassification:
     """
-    Implementation of a decision tree for classification of a single binary output variable.
+    Implementation of a decision tree for classification of a single categorical target of any number of classes.
     """
     def __init__(self, criterion="gini", max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None, random_state=None):
         self.root = None
@@ -66,9 +66,9 @@ class TreeClassification:
 class TreeNode:
     def __init__(self, indices, depth, params):
         self.indices = np.array(indices)   # List of training indices at node
+        self.depth = depth                 # Current depth of node (root = 0)
         self.params = params               # Parameter dictionary passed down from TreeRegression
         
-        self.depth = depth                 # Current depth of node (root = 0)
         self.feature = None                # Feature index used to split node
         self.split_value = None            # Value used to split node
         self.left_node = None              # Left branch TreeNode
@@ -110,16 +110,21 @@ class TreeNode:
         for col in feature_indices:
             # Parse current feature column
             feat_col = X_train[self.indices, col]
-            
             # Obtain sample indices that would sort feature values
             sorted_indices = np.argsort(feat_col)
+            # Sort the feature column
+            sorted_feat = feat_col[sorted_indices]
             
             # Iterate sorted data, locating the best split
-            for i in sorted_indices[1:]:
+            for i in range(1, len(sorted_feat)):
                 # Determine split value and which indices split left vs right
-                split_value = feat_col[i]
+                split_value = sorted_feat[i]
                 left_indices = np.where(feat_col < split_value)[0]
                 right_indices = np.where(feat_col >= split_value)[0]
+                
+                # Safety check to prevent empty child nodes (occurs when duplicate feature value)
+                if len(left_indices) == 0 or len(right_indices) == 0:
+                    continue
                 
                 # Convert left and right indices back into global training data indices
                 left_indices = self.indices[left_indices]
@@ -135,7 +140,7 @@ class TreeNode:
                 if weighted_entropy < lowest_cost:
                     best_feature = col
                     # Split on average value between ordered feature values
-                    best_value = (feat_col[sorted_indices[i - 1]] + feat_col[i]) / 2
+                    best_value = (sorted_feat[i - 1] + sorted_feat[i]) / 2
                     lowest_cost = weighted_entropy
         
         return best_feature, best_value

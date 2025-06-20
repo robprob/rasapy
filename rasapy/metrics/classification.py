@@ -12,8 +12,8 @@ def entropy(y_values):
     probs = counts / counts.sum()
     # Sum entropy for each class
     # Log of 0 is undefined, set 0log(0) = 0log(1) = 0 instead
-    ent = -np.sum(probs * np.log2(np.array([p if p != 0 else 1 for p in probs])))
-    return entropy
+    ent = -np.sum(probs * np.log2(np.where(probs > 0, probs, 1)))
+    return ent
 
 def gini(y_values):
     """

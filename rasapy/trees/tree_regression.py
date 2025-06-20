@@ -96,16 +96,21 @@ class TreeNode:
         for col in feature_indices:
             # Parse current feature column
             feat_col = X_train[self.indices, col]
-            
             # Obtain sample indices that would sort feature values
             sorted_indices = np.argsort(feat_col)
+            # Sort the feature column
+            sorted_feat = feat_col[sorted_indices]
             
             # Iterate sorted data, locating the best split
-            for i in sorted_indices[1:]:
+            for i in range(1, len(sorted_feat)):
                 # Determine split value and which indices split left vs right
-                split_value = feat_col[i]
+                split_value = sorted_feat[i]
                 left_indices = np.where(feat_col < split_value)[0]
                 right_indices = np.where(feat_col >= split_value)[0]
+                
+                # Safety check to prevent empty child nodes (occurs when duplicate feature value)
+                if len(left_indices) == 0 or len(right_indices) == 0:
+                    continue
                 
                 # Convert left and right indices back into global training data indices
                 left_indices = self.indices[left_indices]
@@ -119,7 +124,7 @@ class TreeNode:
                 if weighted_var < lowest_cost:
                     best_feature = col
                     # Split on average value between ordered feature values
-                    best_value = (feat_col[sorted_indices[i - 1]] + feat_col[i]) / 2
+                    best_value = (sorted_feat[i - 1] + sorted_feat[i]) / 2
                     lowest_cost = weighted_var
         
         return best_feature, best_value

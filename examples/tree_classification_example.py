@@ -11,7 +11,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 models = {
     "Decision Tree Classifier": TreeClassification(random_state=115),
     "Max Depth 3": TreeClassification(max_depth=3, random_state=115),
-    "Min Samples Split 5": TreeClassification(min_samples_split=5, random_state=115),
+    "Min Samples Split 3": TreeClassification(min_samples_split=3, random_state=115),
     "Max Features Sqrt": TreeClassification(max_features='sqrt', random_state=115),
     "Max Features 0.5": TreeClassification(max_features=0.5, random_state=115),
     "Max Features 2": TreeClassification(max_features=2, random_state=115),
