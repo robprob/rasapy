@@ -21,4 +21,4 @@ models = {
 for name, model in models.items():
     print(f"{name}:")
     model.fit(X_train, y_train)
-    print(f"  R^2: {model.score(X_test, y_test)}")
+    print(f"  R^2: {model.score(X_test, y_test):.3f}")

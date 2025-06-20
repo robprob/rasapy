@@ -11,7 +11,7 @@ class TreeRegression:
             "max_depth": max_depth,
             "min_samples_split": min_samples_split,
             "min_samples_leaf": min_samples_leaf,
-            "max_features": max_features, # int, float or {“sqrt”, “log2”}, default=None, 
+            "max_features": max_features, # int, float or {“sqrt”, “log2”}, default=None
             "random_state": random_state
         }
         # Seed RNG
@@ -86,14 +86,11 @@ class TreeNode:
         else:
             raise ValueError(f"Invalid parameter input for max_features: {max_features}")
         
-        # Create a random permutation of feature indices
-        # Even if max_features = None, random feature permutation improves randomness/generalizability
-        feature_indices = np.random.permutation(np.arange(n))
-        # Parse feature indices
-        feature_indices = feature_indices[:max_features]
+        # Even if max_features = None (all features), permutation improves randomness/generalizability
+        feature_subset = np.random.choice(n, max_features, replace=False)
         
         # Iterate features
-        for col in feature_indices:
+        for col in feature_subset:
             # Parse current feature column
             feat_col = X_train[self.indices, col]
             # Obtain sample indices that would sort feature values
