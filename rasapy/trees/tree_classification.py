@@ -26,7 +26,8 @@ class TreeClassification:
             "random_state": random_state
         }
         # Seed RNG
-        np.random.seed(random_state)
+        if random_state != None:
+            np.random.seed(random_state)
     
     def fit(self, X_train, y_train):
         """
