@@ -132,6 +132,10 @@ class TreeNode:
         """
         # Determine best feature/value split (lowest cost) for current node's indices
         best_feature, best_value = self.best_split(X_train, y_train)
+        # Check for unsplittable node
+        if best_feature == None or best_value == None:
+            self.set_prediction(y_train[self.indices])
+            return
         # Assign split information to this node
         self.feature = best_feature
         self.split_value = best_value

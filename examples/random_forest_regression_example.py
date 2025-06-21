@@ -1,0 +1,19 @@
+import sklearn.datasets
+from rasapy.trees.random_forest_regression import RandomForestRegression
+from rasapy.utils.preprocessing import train_test_split
+
+from sklearn.ensemble import RandomForestRegressor
+
+data = sklearn.datasets.make_regression(1000, 4, bias=15, noise=0.0, random_state=115)
+X, y = data[0], data[1]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=115)
+
+models = {
+    "Random Forest": RandomForestRegression(n_estimators=10, random_state=115),
+    "Sklearn": RandomForestRegressor(n_estimators=10, random_state=115)
+}
+
+for name, model in models.items():
+    print(f"{name}:")
+    model.fit(X_train, y_train)
+    print(f"  R^2: {model.score(X_test, y_test):.3f}")
