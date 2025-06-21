@@ -90,7 +90,7 @@ class TreeNode:
         if max_features is None:
             max_features = n
         elif isinstance(max_features, int):
-            pass
+            max_features = min(max_features, n)
         elif isinstance(max_features, float):
             max_features = max(1, int(max_features * n))
         elif max_features == "sqrt":

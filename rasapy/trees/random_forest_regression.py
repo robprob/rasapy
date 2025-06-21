@@ -39,15 +39,15 @@ class RandomForestRegression:
         elif isinstance(max_samples, int):
             pass
         elif isinstance(max_samples, float):
-            max_samples = max(1, int(max_samples * n))
+            max_samples = max(1, int(max_samples * m))
         else:
             raise ValueError(f"Invalid parameter input for max_samples: {max_samples}")
         
         # Instantiate forest
-        forest = [TreeRegression(max_depth=self.max_depth,
-                                 min_samples_split=self.min_samples_split,
-                                 min_samples_leaf=self.min_samples_leaf,
-                                 max_features=self.max_features) for _ in range(self.n_estimators)]
+        forest = np.array([TreeRegression(max_depth=self.max_depth,
+                                          min_samples_split=self.min_samples_split,
+                                          min_samples_leaf=self.min_samples_leaf,
+                                          max_features=self.max_features) for _ in range(self.n_estimators)])
         
         # Iterate estimators
         for tree in forest:
@@ -70,14 +70,11 @@ class RandomForestRegression:
         """
         Make a regression prediction based on average predictions of the ensembled trees
         """
-        m, n = X.shape
-        y_pred = np.empty(m)
+        # Iterate estimators, making predictions
+        y_preds = np.array([tree.predict(X) for tree in self.forest])
         
-        # Iterate estimators, adding predictions then dividing by number of estimators
-        for tree in self.forest:
-            y_pred += tree.predict(X)
-        
-        return y_pred / len(self.forest)
+        # Return averaged predictions
+        return np.mean(y_preds, axis=0)
     
     def score(self, X, y_true):
         """
@@ -87,5 +84,3 @@ class RandomForestRegression:
         r2 = r_squared(y_true, y_pred)
         
         return r2
-                
-            
