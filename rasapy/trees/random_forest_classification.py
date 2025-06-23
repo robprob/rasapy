@@ -1,16 +1,18 @@
 import numpy as np
-from rasapy.trees.tree_regression import TreeRegression
-from rasapy.metrics.regression import r_squared
+from rasapy.trees.tree_classification import TreeClassification
+from scipy.stats import mode
+from rasapy.metrics.classification import accuracy
 
-class RandomForestRegression:
+class RandomForestClassification:
     """
-    Implementation of an ensembled random forest of regression trees.
+    Implementation of an ensembled random forest of classification trees.
     """
-    def __init__(self, n_estimators=100, bootstrap=True, max_samples=None, max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None, random_state=None):
+    def __init__(self, n_estimators=100, bootstrap=True, max_samples=None, criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, max_features=None, random_state=None):
         self.forest = [] # list of estimators
         self.n_estimators = n_estimators
         self.bootstrap = bootstrap
         self.max_samples = max_samples # int or float, default=None
+        self.criterion = criterion
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.min_samples_leaf = min_samples_leaf
@@ -37,10 +39,11 @@ class RandomForestRegression:
             raise ValueError(f"Invalid parameter input for max_samples: {max_samples}")
         
         # Instantiate forest
-        forest = np.array([TreeRegression(max_depth=self.max_depth,
-                                          min_samples_split=self.min_samples_split,
-                                          min_samples_leaf=self.min_samples_leaf,
-                                          max_features=self.max_features) for _ in range(self.n_estimators)])
+        forest = np.array([TreeClassification(criterion=self.criterion,
+                                              max_depth=self.max_depth,
+                                              min_samples_split=self.min_samples_split,
+                                              min_samples_leaf=self.min_samples_leaf,
+                                              max_features=self.max_features) for _ in range(self.n_estimators)])
         
         # Iterate estimators
         for tree in forest:
@@ -61,19 +64,19 @@ class RandomForestRegression:
         
     def predict(self, X):
         """
-        Make a regression prediction based on average predictions of the ensembled trees
+        Make a classification prediction based on mode of ensembled tree predictions (hard voting).
         """
         # Iterate estimators, making predictions
         y_preds = np.array([tree.predict(X) for tree in self.forest])
         
-        # Return averaged predictions
-        return np.mean(y_preds, axis=0)
+        # Return mode of predictions
+        return mode(y_preds, axis=0, keepdims=False).mode
     
     def score(self, X, y_true):
         """
-        Make predictions on feature data and calculate coefficient of determination (R^2).
+        Make predictions on feature data and calculate accuracy.
         """
         y_pred = self.predict(X)
-        r2 = r_squared(y_true, y_pred)
+        acc = accuracy(y_true, y_pred)
         
-        return r2
+        return acc
