@@ -25,7 +25,7 @@ class KMeans:
         previous_inertia = np.inf
         
         # Iterate epochs until completion or convergence
-        for epoch in self.max_iter:
+        for epoch in range(self.max_iter):
             # Assign data points to nearest cluster
             X_clusters = self.assign_clusters(X_train, clusters)
             
@@ -101,5 +101,16 @@ class KMeans:
         squared_distance = np.square(X - X_assigned)
         # Sum total squared distance (inertia)
         total_inertia = np.sum(squared_distance)
+        
+        return total_inertia
+    
+    def score(self, X):
+        """
+        Calculate score of model by measuring total inertia.
+        """
+        # Assign points to nearest clusters
+        X_clusters = self.assign_clusters(X, self.clusters)
+        # Calculate total inertia
+        total_inertia = self.inertia(X, X_clusters, self.clusters)
         
         return total_inertia
