@@ -64,10 +64,10 @@ class RandomForestRegression:
         Make a regression prediction based on average predictions of the ensembled trees
         """
         # Iterate estimators, making predictions
-        y_preds = np.array([tree.predict(X) for tree in self.forest])
+        y_pred = np.array([tree.predict(X) for tree in self.forest])
         
         # Return averaged predictions
-        return np.mean(y_preds, axis=0)
+        return np.mean(y_pred, axis=0)
     
     def score(self, X, y_true):
         """

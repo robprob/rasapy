@@ -43,7 +43,6 @@ class KMeans:
         # Assign clusters to model
         self.clusters = clusters
         
-        
     def initialize_clusters(self, X_train, n_clusters):
         """
         Initialize the starting K-clusters, randomly choosing from distinct training points.
@@ -61,8 +60,9 @@ class KMeans:
         X_clusters = np.empty(len(X), dtype=int)
         for i in range(len(X)):
             point = X[i]
+            
             # Calculate Euclidean distance from each point to existing clusters
-            distances = point - clusters # column-wise vectorized subtraction
+            distances = point - clusters # column-wise vectorized difference
             distances = np.square(distances) # squared difference
             distances = np.sum(distances, axis=1) # sum squared difference in all cluster dimensions
             distances = np.sqrt(distances) # standardize Euclidean distance with square root
