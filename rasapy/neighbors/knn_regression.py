@@ -1,11 +1,10 @@
 import numpy as np
-from scipy import stats
 
-from rasapy.metrics.classification import accuracy
+from rasapy.metrics.regression import r_squared
 
-class KNNClassification:
+class KNNRegression:
     """
-    Implementation of K-nearest Neighbors Classification, classifying data points by the training data that is numerically closest.
+    Implementation of K-nearest Neighbors Regression, making predictions based on the training data that is numerically closest.
     """
     def __init__(self, k=5):
         self.k = k
@@ -22,9 +21,9 @@ class KNNClassification:
     
     def predict(self, X):
         """
-        Make classification predictions based on the K-nearest data points.
+        Make regression predictions based on the K-nearest data points.
         """
-        y_pred = np.zeros(len(X), dtype=int)
+        y_pred = np.zeros(len(X), dtype=float)
         
         # Iterate points in X
         for i in range(len(X)):
@@ -39,14 +38,14 @@ class KNNClassification:
             # Parse classes of the k-nearest neighbors
             neighbors = self.y[np.argpartition(distances, self.k)[:self.k]]
             
-            # Make a classification prediction based on the mode of the nearest neighbors
-            y_pred[i] = stats.mode(neighbors, keepdims=False).mode # Ties return numerically smaller label
+            # Make a regression prediction based on the mean of nearest neighbors
+            y_pred[i] = np.mean(neighbors)
         
         return y_pred
     
     def score(self, X, y_true):
         """
-        Make classification predictions and calculate accuracy.
+        Make regression predictions and calculate coefficient of determination (R^2).
         """
         y_pred = self.predict(X)
-        return accuracy(y_true, y_pred)
+        return r_squared(y_true, y_pred)
