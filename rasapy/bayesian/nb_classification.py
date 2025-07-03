@@ -7,12 +7,14 @@ class NaiveBayesClassification:
     Implementation of a Naive Bayes classifier, assuming strong conditional feature independence given class label.
     Currently supporting Multinomial data (Plans for Gaussian and Bernoulli).
     """
-    def __init__(self, distribution='multinomial'):
+    def __init__(self, distribution='multinomial', alpha=1.0):
         # Validate distribution input
         if distribution in {'multinomial'}:
             self.distribution = distribution
         else:
             raise ValueError(f"Invalid distribution: {distribution}")
+        
+        self.alpha = alpha # Laplace smoothing parameter (Additive smoothing)
         
         self.classes = None
         self.priors = None
@@ -36,16 +38,20 @@ class NaiveBayesClassification:
         """
         Fit multinomial data to the Naive Bayes model.
         """
-        # Calculate total count of feature observations by class label
-        class_feature_counts = np.zeros((len(self.classes), X_train.shape[1]), dtype=float)
+        num_features = X_train.shape[1]
         
+        # Calculate total count of feature observations by class label
+        class_feature_counts = np.zeros((len(self.classes), num_features), dtype=int)
         for i, c in enumerate(self.classes):
             # Parse training entries where class label equals current class, sum along features axis (columns)
             class_feature_counts[i] = X_train[y_train == c].sum(axis=0)
         
         # Calculate frequency for each feature as a result of observed counts
+        class_feature_freq = np.zeros((len(self.classes), X_train.shape[1]), dtype=float)
         for i, c in enumerate(self.classes):
-            class_feature_counts[i] /= np.sum(class_feature_counts[i])
+            # Perform Laplace smoothing
+            # If feature is not seen in any a specific class outputs, it otherwise leads to 0 probability when frequencies are multiplied together
+            class_feature_freq[i] = (class_feature_counts[i] + self.alpha) / (np.sum(class_feature_counts[i]) + (self.alpha * num_features))
         
         # Assign class feature counts to the model
         self.class_feature_counts = class_feature_counts
