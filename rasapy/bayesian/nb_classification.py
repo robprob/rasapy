@@ -21,7 +21,6 @@ class NaiveBayesClassification:
         self.priors = None
         
         # Multinomial
-        self.class_feature_counts = None
         self.class_feature_freq = None
         
         # Gaussian
