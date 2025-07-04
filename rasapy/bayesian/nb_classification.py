@@ -6,7 +6,7 @@ from rasapy.metrics.classification import accuracy
 class NaiveBayesClassification:
     """
     Implementation of a Naive Bayes classifier, assuming strong conditional feature independence given class label.
-    Currently supporting Multinomial data (Plans for Gaussian and Bernoulli).
+    Currently supporting Multinomial and Gaussian data (Plans for Bernoulli).
     """
     def __init__(self, distribution='multinomial', alpha=1.0):
         # Validate distribution input
