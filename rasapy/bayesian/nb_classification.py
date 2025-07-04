@@ -19,6 +19,7 @@ class NaiveBayesClassification:
         self.classes = None
         self.priors = None
         self.class_feature_counts = None
+        self.class_feature_freq = None
         
     def fit(self, X_train, y_train):
         """
@@ -54,13 +55,13 @@ class NaiveBayesClassification:
             class_feature_freq[i] = (class_feature_counts[i] + self.alpha) / (np.sum(class_feature_counts[i]) + (self.alpha * num_features))
         
         # Assign class feature counts to the model
-        self.class_feature_counts = class_feature_counts
+        self.class_feature_freq = class_feature_freq
     
     def predict_proba(self, X):
         """
         Make class probability predictions based on the priors observed in the training data.
         """
-        return (X @ self.class_feature_counts.T) # Matrix of size (X.shape[0], num_classes)
+        return (X @ self.class_feature_freq.T) # Matrix of size (X.shape[0], num_classes)
         
     def predict(self, X):
         """
