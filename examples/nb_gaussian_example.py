@@ -1,5 +1,4 @@
 import sklearn.datasets
-import numpy as np
 from rasapy.utils.preprocessing import train_test_split
 from rasapy.bayesian.nb_classification import NaiveBayesClassification
 from sklearn.naive_bayes import GaussianNB
