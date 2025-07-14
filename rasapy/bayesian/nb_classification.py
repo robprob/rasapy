@@ -6,11 +6,11 @@ from rasapy.metrics.classification import accuracy
 class NaiveBayesClassification:
     """
     Implementation of a Naive Bayes classifier, assuming strong conditional feature independence given class label.
-    Currently supporting Multinomial and Gaussian data (Plans for Bernoulli).
+    Supports Multinomial, Gaussian, and Bernoulli input data.
     """
     def __init__(self, distribution='multinomial', alpha=1.0):
         # Validate distribution input
-        if distribution in {'multinomial', 'gaussian'}:
+        if distribution in {'multinomial', 'gaussian', 'bernoulli'}:
             self.distribution = distribution
         else:
             raise ValueError(f"Invalid distribution: {distribution}")
@@ -27,6 +27,10 @@ class NaiveBayesClassification:
         self.means = None
         self.vars = None
         
+        # Bernoulli
+        self.log_prob_0 = None
+        self.log_prob_1 = None
+        
     def fit(self, X_train, y_train):
         """
         Fit Naive Bayes model to the training data using the specified data distribution/model variation.
@@ -42,6 +46,8 @@ class NaiveBayesClassification:
             self.fit_multinomial(X_train, y_train)
         elif self.distribution == 'gaussian':
             self.fit_gaussian(X_train, y_train)
+        elif self.distribution == 'bernoulli':
+            self.fit_bernoulli(X_train, y_train)
     
     def fit_multinomial(self, X_train, y_train):
         """
@@ -84,12 +90,27 @@ class NaiveBayesClassification:
         self.means = means
         self.vars = vars
     
+    def fit_bernoulli(self, X_train, y_train):
+        """
+        Fit binary Bernoulli data to the Naive Bayes model.
+        """
+        num_classes, num_features = len(self.classes), X_train.shape[1]
+        
+        # Fit standard multinomial frequencies
+        self.fit_multinomial(X_train, y_train)
+        
+        # Calculate log probs
+        self.log_prob_1 = np.log(self.class_feature_freq) # positive class frequencies (1)
+        self.log_prob_0 = np.log(1 - self.class_feature_freq) # complement, negative class frequencies (0)
+        
+    
     def predict_proba(self, X):
         """
         Make class probability predictions based on the priors observed in the training data.
         """
         num_classes, num_features = len(self.classes), X.shape[1]
         
+        # Delegate to distribution-specific probability prediction
         if self.distribution == 'multinomial':
             y_proba = X @ self.class_feature_freq.T # Matrix of size (X.shape[0], num_classes)
         elif self.distribution == 'gaussian':
@@ -99,7 +120,9 @@ class NaiveBayesClassification:
                 log_likelihoods = stats.norm.logpdf(X, loc=self.means[i], scale=np.sqrt(self.vars[i])) # takes STD instead of variance
                 # Logarithmic product rule allows adding log likelihoods instead of multiplying raw likelihoods (risk of numerical instability/underflow)
                 y_proba[:, i] = log_likelihoods.sum(axis=1)
-        
+        elif self.distribution == 'bernoulli':
+            y_proba = (X @ self.log_prob_1.T) + ((1 - X) @ self.log_prob_0.T) # Matrix of size (X.shape[0], 2)
+            
         return y_proba
         
     def predict(self, X):
