@@ -2,6 +2,7 @@ import sklearn.datasets
 import numpy as np
 from rasapy.utils.preprocessing import train_test_split
 from rasapy.bayesian.nb_classification import NaiveBayesClassification
+
 from sklearn.naive_bayes import BernoulliNB
 
 data = sklearn.datasets.make_classification(n_samples=100, n_features=10, n_informative=4, class_sep=2.0, random_state=115)
