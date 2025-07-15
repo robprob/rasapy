@@ -1,10 +1,10 @@
 import numpy as np
 
 class KMeans:
+    """
+    Implementation of KMeans clustering utilizing the Lloyd algorithm.
+    """
     def __init__(self, n_clusters=8, max_iter=300, tol=0.0001, random_state=None):
-        """
-        Implementation of KMeans clustering utilizing the Lloyd algorithm.
-        """
         self.n_clusters = n_clusters # k number of clusters
         self.max_iter = max_iter # max algorithm iterations
         self.tol = tol # tolerance threshold for convergence
