@@ -1,10 +1,10 @@
-import sklearn.datasets
-from rasapy.trees.random_forest_regression import RandomForestRegression
+from sklearn.datasets import make_regression
 from rasapy.utils.preprocessing import train_test_split
 
+from rasapy.trees import RandomForestRegression
 from sklearn.ensemble import RandomForestRegressor
 
-data = sklearn.datasets.make_regression(250, 5, bias=15, noise=10.0, random_state=115)
+data = make_regression(250, 5, bias=15, noise=10.0, random_state=115)
 X, y = data[0], data[1]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=115)
 

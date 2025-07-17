@@ -1,7 +1,7 @@
-from rasapy.neighbors.knn_classification import KNNClassification
+from sklearn.datasets import make_blobs
 from rasapy.utils.preprocessing import train_test_split
 
-from sklearn.datasets import make_blobs
+from rasapy.neighbors import KNNClassification
 from sklearn.neighbors import KNeighborsClassifier
 
 X, y = make_blobs(250, centers=5, cluster_std=1.5, random_state=115)

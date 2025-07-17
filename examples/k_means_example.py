@@ -1,7 +1,7 @@
-from rasapy.clustering.k_means import KMeans
+from sklearn.datasets import make_blobs
 from rasapy.utils.preprocessing import train_test_split
 
-from sklearn.datasets import make_blobs
+from rasapy.clustering import KMeans
 from sklearn.cluster import KMeans as sk_KMeans
 
 X, y = make_blobs(250, centers=5, cluster_std=0.75, random_state=115)

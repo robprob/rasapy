@@ -1,10 +1,11 @@
-import sklearn.datasets
-from rasapy.linear_models.logistic_regression import LogisticRegression
+from sklearn.datasets import make_classification
 from rasapy.utils.preprocessing import train_test_split
 
+
+from rasapy.linear_models import LogisticRegression
 from sklearn.linear_model import LogisticRegression as ScikitLogisticRegression
 
-data = sklearn.datasets.make_classification(25, 10, random_state=115)
+data = make_classification(25, 10, random_state=115)
 X, y = data[0], data[1]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=115)
 

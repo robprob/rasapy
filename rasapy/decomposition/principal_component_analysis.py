@@ -16,6 +16,7 @@ class PCA:
         """
         
         # Center data around the origin (subtract mean of each feature)
-        X -= np.mean(X, axis=0)
+        mu = np.mean(X, axis=0)
+        X -= mu
         
         # Maximize sum of squared distance from origin

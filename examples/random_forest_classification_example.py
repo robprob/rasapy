@@ -1,10 +1,11 @@
-import sklearn.datasets
-from rasapy.trees.random_forest_classification import RandomForestClassification
+from sklearn.datasets import make_classification
 from rasapy.utils.preprocessing import train_test_split
 
+
+from rasapy.trees import RandomForestClassification
 from sklearn.ensemble import RandomForestClassifier
 
-data = sklearn.datasets.make_classification(250, 5, n_classes=3, n_clusters_per_class=1, random_state=115)
+data = make_classification(250, 5, n_classes=3, n_clusters_per_class=1, random_state=115)
 X, y = data[0], data[1]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=115)
 

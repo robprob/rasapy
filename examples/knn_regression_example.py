@@ -1,7 +1,7 @@
-from rasapy.neighbors.knn_regression import KNNRegression
+from sklearn.datasets import make_regression
 from rasapy.utils.preprocessing import train_test_split
 
-from sklearn.datasets import make_regression
+from rasapy.neighbors import KNNRegression
 from sklearn.neighbors import KNeighborsRegressor
 
 data = make_regression(250, 10, bias=15, noise=10.0, random_state=115)
