@@ -11,7 +11,7 @@ RasaPy is an educational machine‑learning library built from scratch in Python
 - **Classification**
   - Logistic Regression
   - K‑Nearest Neighbors Classification
-  - Multinomial Naïve Bayes
+  - Naïve Bayes (Bernoulli, Gaussian, Multinomial)
   - Decision Tree Classification
   - Random Forest Classification
 - **Regression**
