@@ -2,10 +2,8 @@ import numpy as np
 from rasapy.linear_models.base_regressor import BaseRegressor
 
 class OLSRegression(BaseRegressor):
-    def __init__(self, learning_rate=0.05, epochs=1000):
+    def __init__(self):
         super().__init__()
-        self.learning_rate = learning_rate
-        self.epochs = epochs
     
     def fit(self, X_train, y_train):
         """
