@@ -19,7 +19,7 @@ class PCA:
         """
         # Center data around the origin (subtract mean of each feature)
         self.mu = np.mean(X_train, axis=0)
-        Xc -= self.mu # X centered
+        Xc = X_train - self.mu # X centered
         
         # Perform Signular Value Decomposition of input matrix
         U, S, Vh = np.linalg.svd(Xc, full_matrices=True, compute_uv=True)
