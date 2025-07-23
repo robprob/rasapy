@@ -21,6 +21,8 @@ RasaPy is an educational machine‑learning library built from scratch in Python
   - Random Forest Regression
 - **Clustering**
   - K‑means
+- **Decomposition**
+  - Principal Component Analysis (PCA)
 
 ## Philosophy
 
