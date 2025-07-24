@@ -1,4 +1,5 @@
-from rasapy.linear_models import OLSRegression
+import numpy as np
+
 from rasapy.utils.activation import *
 
 class Perceptron:
@@ -11,17 +12,18 @@ class Perceptron:
             'sigmoid': [sigmoid, sigmoid_derivative],
             'tanh': [tanh, tanh_derivative]
         }
-        function = activation_functions.get(activation)
-        if function is None:
-            self.activation = linear # Fallback to identity function, aka linear activation
-            self.derivative = linear_derivative
-        else:
-            self.activation = function[0]
-            self.derivative = function[1]
+        # Parse chosen activation, otherwise fallback to identity function (aka linear activation)
+        self.activation, self.activation_derivative = activation_functions.get(activation, [linear, linear_derivative])
         
-        self.model = OLSRegression() # Base linear model used for predictions
         self.weights = None
         self.bias = None
+    
+    def param_init(self, n):
+        """
+        Initialize parameters for a linear model.
+        """
+        self.weights = np.zeros(n)
+        self.bias = 0.0
     
     def fit(self, X_train, y_train):
         """

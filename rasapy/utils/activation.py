@@ -23,12 +23,14 @@ def linear_derivative(x):
     return x
 
 def relu_derivative(x):
-    x[x > 0] = 1
-    x[x <= 0] = 0
+    x[x > 0] = 1.0
+    x[x <= 0] = 0.0
     return x
 
 def leaky_relu_derivative(x, alpha=0.01):
-    x[x <= 0] *= alpha
+    x[x > 0] = 1.0
+    x[x <= 0] = alpha
+    return x
 
 def sigmoid_derivative(x):
     x = x * (1 - x)
@@ -36,3 +38,4 @@ def sigmoid_derivative(x):
 
 def tanh_derivative(x):
     x = 1 - (x**2)
+    return x
