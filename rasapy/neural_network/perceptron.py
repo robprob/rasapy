@@ -5,17 +5,23 @@ class Perceptron:
     def __init__(self, activation='relu'):
         # Parse activation function
         activation_functions = {
-            'linear': linear,
-            'relu': relu,
-            'leaky_relu': leaky_relu,
-            'sigmoid': sigmoid,
-            'tanh': tanh
+            'linear': [linear, linear_derivative],
+            'relu': [relu, relu_derivative],
+            'leaky_relu': [leaky_relu, leaky_relu_derivative],
+            'sigmoid': [sigmoid, sigmoid_derivative],
+            'tanh': [tanh, tanh_derivative]
         }
-        self.activation = activation_functions.get(activation)
-        if self.activation is None:
-            self.activation = linear # Fallback to identity function, or linear activation
+        function = activation_functions.get(activation)
+        if function is None:
+            self.activation = linear # Fallback to identity function, aka linear activation
+            self.derivative = linear_derivative
+        else:
+            self.activation = function[0]
+            self.derivative = function[1]
         
         self.model = OLSRegression() # Base linear model used for predictions
+        self.weights = None
+        self.bias = None
     
     def fit(self, X_train, y_train):
         """
@@ -29,4 +35,3 @@ class Perceptron:
         """
         y_pred = self.model.predict(X)
         return self.activation(y_pred)
-        

@@ -18,4 +18,3 @@ def mean_squared_error(y_true, y_pred):
     """
     mse = ((y_pred - y_true)**2).mean()
     return mse
-    
