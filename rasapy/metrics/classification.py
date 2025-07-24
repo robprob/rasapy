@@ -1,5 +1,6 @@
 import numpy as np
 
+# Cost and Evaluation Metrics
 def entropy(y_values):
     """
     Calculate entropy as an impurity measure for multi-class classification.
@@ -28,7 +29,6 @@ def gini(y_values):
     # Sum gini impurity for each class
     gini = 1.0 - np.sum(probs ** 2)
     return gini
-    
 
 def binary_entropy(y_values):
     """
@@ -58,3 +58,20 @@ def accuracy(y_true, y_pred):
     """
     acc = np.mean(y_true == y_pred)
     return acc
+
+def binary_cross_entropy(y_true, y_pred, epsilon=1e-10):
+    """
+    Compute binary cross entropy (BCE) between predicted probabilities and true labels.
+        BCE = -[ylog(pᵢ) + (1 - y) log(1 - pᵢ)]
+    """
+    # Clip predictions to prevent log(0)
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon) # Clip predictions to prevent log(0)
+    bce = -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+    return bce
+
+
+# Derivatives
+def binary_cross_entropy_derivative(y_true, y_pred, epsilon=1e-10):
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon) # Clip predictions to prevent log(0)
+    dL_da = (y_pred - y_true) / (y_pred * (1 - y_pred))
+    return dL_da

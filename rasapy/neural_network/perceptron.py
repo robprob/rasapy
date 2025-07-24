@@ -1,10 +1,10 @@
 import numpy as np
 
+from rasapy.metrics import *
 from rasapy.utils.activation import *
 
 class Perceptron:
-    def __init__(self, activation='relu'):
-        # Parse activation function
+    def __init__(self, activation='relu', loss='mse'):
         activation_functions = {
             'linear': [linear, linear_derivative],
             'relu': [relu, relu_derivative],
@@ -13,7 +13,19 @@ class Perceptron:
             'tanh': [tanh, tanh_derivative]
         }
         # Parse chosen activation, otherwise fallback to identity function (aka linear activation)
-        self.activation, self.activation_derivative = activation_functions.get(activation, [linear, linear_derivative])
+        if activation in activation_functions.keys():
+            self.activation, self.activation_derivative = activation_functions.get(activation)
+        elif activation is None:
+            # Fallback to identity function
+            self.activation, self.activation_derivative = activation_functions.get('linear')
+        else:
+            raise ValueError(f"Unknown activation function: {activation}")
+        
+        loss_functions = {
+            'bce': [binary_cross_entropy, binary_cross_entropy_derivative]
+        }
+        # Parse chosen loss function
+        self.loss, self.loss_derivative = loss_functions.get(loss)
         
         self.weights = None
         self.bias = None
@@ -22,18 +34,39 @@ class Perceptron:
         """
         Initialize parameters for a linear model.
         """
-        self.weights = np.zeros(n)
+        self.weights = np.random.randn(n) * 1e-2
         self.bias = 0.0
     
-    def fit(self, X_train, y_train):
+    def fit(self, X_train, y_train, learning_rate=0.01, epochs=1000):
         """
-        Fit the associated linear model to training data.
+        Train perceptron using gradient descent, fitting linear parameters to the training data.
         """
-        self.model.fit(X_train, y_train)
+        m, n = X_train.shape
+        self.param_init(n)
+        
+        for epoch in range(epochs):
+            # Forward pass
+            linear_output = X_train @ self.weights + self.bias
+            y_pred = self.activation(linear_output)
+            
+            # Accumulate gradients
+            if self.activation == sigmoid and self.loss == binary_cross_entropy:
+                grad = y_pred - y_train # Numerically stable shortcut
+            else:
+                dL = self.loss_derivative(y_train, y_pred) # Loss gradient
+                da = self.activation_derivative(linear_output) # Activation gradient
+                grad = dL * da # Chain rule
+            
+            # Calculate gradient with respect to linear parameters
+            dL_dw = (X_train.T @ grad) / m
+            dL_db = grad.mean()
+            
+            # Update parameters according to opposite gradient
+            self.weights -= learning_rate * dL_dw
+            self.bias -= learning_rate * dL_db
     
     def predict(self, X):
         """
         Make predictions based on the model weights and chosen activation function.
         """
-        y_pred = self.model.predict(X)
-        return self.activation(y_pred)
+        return self.activation(X @ self.weights + self.bias)

@@ -11,6 +11,7 @@ def leaky_relu(x, alpha=0.01):
     return np.maximum(x * alpha, x)
 
 def sigmoid(x):
+    x = np.clip(x, -100, 100) # Prevent overflow
     return 1 / (1 + np.exp(-x))
 
 def tanh(x):
