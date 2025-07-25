@@ -13,7 +13,6 @@ models = {
     "Linear Perceptron": Perceptron(activation='linear'),
     "Relu": Perceptron(activation='relu'),
     "Leaky Relu": Perceptron(activation='leaky_relu'),
-    "Sigmoid": Perceptron(activation='sigmoid'),
     "Hyperbolic Tangent": Perceptron(activation='tanh')
 }
 
