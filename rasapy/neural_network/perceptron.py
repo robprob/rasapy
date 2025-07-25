@@ -22,6 +22,7 @@ class Perceptron:
             raise ValueError(f"Unknown activation function: {activation}")
         
         loss_functions = {
+            'mse': [mean_squared_error, mean_squared_error_derivative],
             'bce': [binary_cross_entropy, binary_cross_entropy_derivative]
         }
         # Parse chosen loss function

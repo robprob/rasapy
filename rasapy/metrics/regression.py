@@ -16,5 +16,11 @@ def mean_squared_error(y_true, y_pred):
     """
     (1/m) * Σ(ŷᵢ - yᵢ)²
     """
-    mse = ((y_pred - y_true)**2).mean()
+    mse = ((y_true - y_pred)**2).mean()
     return mse
+
+
+# Derivatives
+def mean_squared_error_derivative(y_true, y_pred):
+    dL = (2 / len(y_pred)) * (y_true - y_pred)
+    return dL

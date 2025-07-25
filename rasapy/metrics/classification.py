@@ -73,5 +73,5 @@ def binary_cross_entropy(y_true, y_pred, epsilon=1e-10):
 # Derivatives
 def binary_cross_entropy_derivative(y_true, y_pred, epsilon=1e-10):
     y_pred = np.clip(y_pred, epsilon, 1 - epsilon) # Clip predictions to prevent log(0)
-    dL_da = (y_pred - y_true) / (y_pred * (1 - y_pred))
-    return dL_da
+    dL = (y_pred - y_true) / (y_pred * (1 - y_pred))
+    return dL
