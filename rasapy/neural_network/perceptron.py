@@ -1,5 +1,8 @@
 import numpy as np
 
+from rasapy.utils.activation import *
+from rasapy.metrics import *
+
 from rasapy.utils.parse_input import get_activation, get_loss
 
 class Perceptron:
