@@ -1,32 +1,14 @@
 import numpy as np
 
-from rasapy.metrics import *
-from rasapy.utils.activation import *
+from rasapy.utils.parse_input import get_activation, get_loss
 
 class Perceptron:
+    """
+    Implementation of a simple single-layer perceptron node.
+    """
     def __init__(self, activation='relu', loss='mse'):
-        activation_functions = {
-            'linear': [linear, linear_derivative],
-            'relu': [relu, relu_derivative],
-            'leaky_relu': [leaky_relu, leaky_relu_derivative],
-            'sigmoid': [sigmoid, sigmoid_derivative],
-            'tanh': [tanh, tanh_derivative]
-        }
-        # Parse chosen activation, otherwise fallback to identity function (aka linear activation)
-        if activation in activation_functions.keys():
-            self.activation, self.activation_derivative = activation_functions.get(activation)
-        elif activation is None:
-            # Fallback to identity function
-            self.activation, self.activation_derivative = activation_functions.get('linear')
-        else:
-            raise ValueError(f"Unknown activation function: {activation}")
-        
-        loss_functions = {
-            'mse': [mean_squared_error, mean_squared_error_derivative],
-            'bce': [binary_cross_entropy, binary_cross_entropy_derivative]
-        }
-        # Parse chosen loss function
-        self.loss, self.loss_derivative = loss_functions.get(loss)
+        self.activation, self.activation_derivative = get_activation(activation)
+        self.loss, self.loss_derivative = get_loss(loss)
         
         self.weights = None
         self.bias = None
