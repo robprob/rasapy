@@ -26,3 +26,9 @@ def get_loss(function_name):
         raise ValueError(f"Unknown loss function: {function_name}")
     
     return loss_functions.get(function_name)
+
+def get_score(loss_name):
+    score_functions = {
+        'mse': r_squared
+    }
+    return score_functions.get(loss_name)

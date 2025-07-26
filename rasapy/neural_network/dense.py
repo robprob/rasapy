@@ -1,6 +1,6 @@
 import numpy as np
 
-from rasapy.utils import *
+from rasapy.utils import get_activation
 
 class Dense:
     """
@@ -23,7 +23,7 @@ class Dense:
         Propagate forward, calculating output using linear parameters and chosen activation function.
         """
         self.X = X
-        self.Z = self.Weights @ self.X + self.bias
+        self.Z = self.X @ self.Weights + self.bias
         self.A = self.activation(self.Z)
         return self.A
     
