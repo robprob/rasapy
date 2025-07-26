@@ -10,7 +10,7 @@ class PCA:
         self.mu = None # Means of each input feature
         self.components = None # Principal eigenvector components
         
-        self.explained_variance_ratio = None # ratios of variance explained by each component
+        self.explained_variance_ratio = None # Proportion of variance explained by each component
         self.singular_values = None # sqrt(SS(distance from origin)) for each component
     
     def fit(self, X_train):

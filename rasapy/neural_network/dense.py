@@ -20,7 +20,7 @@ class Dense:
     
     def forward_prop(self, X):
         """
-        Propagate forward, calculating an output using linear parameters and chosen activation function.
+        Propagate forward, calculating output using linear parameters and chosen activation function.
         """
         self.X = X
         self.Z = self.Weights @ self.X + self.bias
