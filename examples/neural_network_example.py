@@ -12,7 +12,7 @@ models = {
     "Neural Network": NeuralNetwork(
         layers=[
             Dense(n_input=X_train.shape[1], n_output=100, activation='relu'),
-            Dense(n_input=100, n_output=1, activation='relu')
+            Dense(n_input=100, n_output=1, activation='linear')
             ],
         ),
     "Sklearn MLPRegressor": MLPRegressor(

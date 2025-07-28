@@ -20,23 +20,16 @@ def tanh(x):
 
 # Activation Function Derivatives
 def linear_derivative(x):
-    x[:] = 1
-    return x
+    return np.ones_like(x)
 
 def relu_derivative(x):
-    x[x > 0] = 1.0
-    x[x <= 0] = 0.0
-    return x
+    return np.where(x > 0, 1.0, 0.0)
 
 def leaky_relu_derivative(x, alpha=0.01):
-    x[x > 0] = 1.0
-    x[x <= 0] = alpha
-    return x
+    return np.where(x > 0, 1.0, alpha)
 
 def sigmoid_derivative(x):
-    x = x * (1 - x)
-    return x
+    return x * (1 - x)
 
 def tanh_derivative(x):
-    x = 1 - (x**2)
-    return x
+    return 1 - (x**2)
