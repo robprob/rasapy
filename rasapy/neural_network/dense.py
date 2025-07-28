@@ -38,10 +38,11 @@ class Dense:
         dW = (self.X.T @ dZ) / self.X.shape[0]
         db = np.mean(dZ, axis=0, keepdims=True)
         
+        # Gradients with respect to input features (to pass to previous layer)
+        dX = dZ @ self.Weights.T
+        
         # Update parameters, moving opposite to gradient
         self.Weights -= dW * learning_rate
         self.bias -= db * learning_rate
-        
-        # Gradients with respect to input features (to pass to previous layer)
-        dX = dZ @ self.Weights.T
+
         return dX
