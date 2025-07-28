@@ -23,6 +23,9 @@ RasaPy is an educational machine‑learning library built from scratch in Python
   - K‑means
 - **Decomposition**
   - Principal Component Analysis (PCA)
+- **Neural Network**
+  - Dense Layer
+  - Feedforward Neural Network
 
 ## Philosophy
 
