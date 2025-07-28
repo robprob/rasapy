@@ -56,5 +56,5 @@ class NeuralNetwork:
         """
         Make predictions and score model based on chosen loss function.
         """
-        y_pred = self.predict(X)
+        y_pred = self.predict(X).flatten()
         return self.score_function(y_true, y_pred)

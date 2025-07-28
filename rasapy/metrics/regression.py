@@ -22,5 +22,5 @@ def mean_squared_error(y_true, y_pred):
 
 # Derivatives
 def mean_squared_error_derivative(y_true, y_pred):
-    dL = (2 / len(y_pred)) * (y_true - y_pred)
+    dL = (2 / len(y_pred)) * (y_pred - y_true)
     return dL
